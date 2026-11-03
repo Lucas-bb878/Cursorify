@@ -16,6 +16,12 @@
             android:text="@string/settings_title"
             android:textSize="28sp"
             android:textStyle="bold" />
+<com.google.android.material.button.MaterialButton
+    android:id="@+id/chooseCursorImageButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:text="Escolher imagem do cursor" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/dwellEnabledSwitch"
