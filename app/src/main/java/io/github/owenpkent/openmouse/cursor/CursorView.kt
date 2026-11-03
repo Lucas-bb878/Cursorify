@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat
 import io.github.owenpkent.openmouse.R
 import io.github.owenpkent.openmouse.menu.GestureMenu
 import android.graphics.drawable.Drawable
+import android.graphics.Movie
+import android.os.SystemClock
 
 /**
  * Full-screen transparent overlay that draws the big cross-hair cursor and
@@ -55,10 +57,20 @@ class CursorView(context: Context) : View(context) {
 
     private var cursorDrawable: Drawable? =
         ContextCompat.getDrawable(context, R.drawable.cursor_image)
+        private var cursorMovie: Movie? = null
+private var movieStartTime = 0L
+
+fun setCursorMovie(movie: Movie?) {
+    cursorMovie = movie
+    cursorDrawable = null
+    movieStartTime = SystemClock.uptimeMillis()
+    invalidate()
+}
     fun setCursorDrawable(drawable: Drawable?) {
-        cursorDrawable = drawable
-        invalidate()
-    }
+    cursorDrawable = drawable
+    cursorMovie = null
+    invalidate()
+}
     // Base sizes at scale 1.0; the cross-hair scales with cursorScale.
     private val baseArm = 34f * d
     private val baseGap = 7f * d
@@ -186,16 +198,35 @@ class CursorView(context: Context) : View(context) {
         val left = cursorX - 4f * d * cursorScale
         val top = cursorY - 3f * d * cursorScale
 
-        cursorDrawable?.setBounds(
-            left.toInt(),
-            top.toInt(),
-            (left + imageSize).toInt(),
-            (top + imageSize).toInt()
-        )
+        val movie = cursorMovie
 
-        cursorDrawable?.draw(canvas)
+if (movie != null) {
+    val duration = movie.duration().coerceAtLeast(1)
+    val elapsed = SystemClock.uptimeMillis() - movieStartTime
+
+    movie.setTime((elapsed % duration).toInt())
+
+    canvas.save()
+    canvas.translate(left, top)
+    canvas.scale(
+        imageSize / movie.width(),
+        imageSize / movie.height()
+    )
+    movie.draw(canvas, 0f, 0f)
+    canvas.restore()
+
+    postInvalidateOnAnimation()
+} else {
+    cursorDrawable?.setBounds(
+        left.toInt(),
+        top.toInt(),
+        (left + imageSize).toInt(),
+        (top + imageSize).toInt()
+    )
+
+    cursorDrawable?.draw(canvas)
+}
     }
-
     private fun drawArms(canvas: Canvas, paint: Paint) {
         val x = cursorX
         val y = cursorY
