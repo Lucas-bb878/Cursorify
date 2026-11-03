@@ -53,6 +53,8 @@ class CursorView(context: Context) : View(context) {
     private var pendingY = -1f
 
     private val d = resources.displayMetrics.density
+    private val cursorDrawable =
+    ContextCompat.getDrawable(context, R.drawable.cursor_image)
 
     // Base sizes at scale 1.0; the cross-hair scales with cursorScale.
     private val baseArm = 34f * d
@@ -177,10 +179,19 @@ class CursorView(context: Context) : View(context) {
 
         // Each arm is drawn outline-first, then fill, so the cross stays legible
         // over any background.
-        drawArms(canvas, outlinePaint)
-        drawArms(canvas, fillPaint)
-        canvas.drawCircle(cursorX, cursorY, dotRadius, dotPaint)
-    }
+        val imageSize = 48f * d * cursorScale
+val left = cursorX - 4f * d * cursorScale
+val top = cursorY - 3f * d * cursorScale
+
+cursorDrawable?.setBounds(
+    left.toInt(),
+    top.toInt(),
+    (left + imageSize).toInt(),
+    (top + imageSize).toInt()
+)
+
+cursorDrawable?.draw(canvas)
+}
 
     private fun drawArms(canvas: Canvas, paint: Paint) {
         val x = cursorX
