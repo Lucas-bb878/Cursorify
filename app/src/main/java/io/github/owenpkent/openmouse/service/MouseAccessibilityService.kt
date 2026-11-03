@@ -23,6 +23,7 @@ import io.github.owenpkent.openmouse.menu.GestureMenu
 import io.github.owenpkent.openmouse.settings.OpenMouseSettings
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.graphics.Movie
 
 /**
  * The OpenMouse engine.
@@ -229,17 +230,35 @@ class MouseAccessibilityService : AccessibilityService() {
         val imageUri = prefs.cursorImageUri
 
 if (imageUri != null && imageUri != loadedCursorImageUri) {
-    val drawable = try {
-        contentResolver.openInputStream(Uri.parse(imageUri))?.use {
-            Drawable.createFromStream(it, null)
-        }
-    } catch (e: Exception) {
-        null
-    }
+    val uri = Uri.parse(imageUri)
+    val mimeType = contentResolver.getType(uri)
 
-    if (drawable != null) {
-        cursorView?.setCursorDrawable(drawable)
-        loadedCursorImageUri = imageUri
+    if (mimeType == "image/gif") {
+        val movie = try {
+            contentResolver.openInputStream(uri)?.use {
+                Movie.decodeStream(it)
+            }
+        } catch (e: Exception) {
+            null
+        }
+
+        if (movie != null) {
+            cursorView?.setCursorMovie(movie)
+            loadedCursorImageUri = imageUri
+        }
+    } else {
+        val drawable = try {
+            contentResolver.openInputStream(uri)?.use {
+                Drawable.createFromStream(it, null)
+            }
+        } catch (e: Exception) {
+            null
+        }
+
+        if (drawable != null) {
+            cursorView?.setCursorDrawable(drawable)
+            loadedCursorImageUri = imageUri
+        }
     }
 }
         cursorView?.setCursorColor(prefs.cursorColor)
