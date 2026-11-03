@@ -21,6 +21,8 @@ import io.github.owenpkent.openmouse.gesture.PassthroughGate
 import io.github.owenpkent.openmouse.menu.GestureAction
 import io.github.owenpkent.openmouse.menu.GestureMenu
 import io.github.owenpkent.openmouse.settings.OpenMouseSettings
+import android.graphics.drawable.Drawable
+import android.net.Uri
 
 /**
  * The OpenMouse engine.
@@ -54,7 +56,8 @@ class MouseAccessibilityService : AccessibilityService() {
     private var dwellClicker: DwellClicker? = null
     private var gestureDispatcher: GestureDispatcher? = null
     private var gestureMenu: GestureMenu? = null
-
+    private var loadedCursorImageUri: String? = null
+    
     private var settings: OpenMouseSettings? = null
     private val settingsListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> applySettings() }
@@ -223,6 +226,22 @@ class MouseAccessibilityService : AccessibilityService() {
             prefs.postActionThresholdDp * density,
         )
         cursorView?.setCursorScale(prefs.cursorScale)
+        val imageUri = prefs.cursorImageUri
+
+if (imageUri != null && imageUri != loadedCursorImageUri) {
+    val drawable = try {
+        contentResolver.openInputStream(Uri.parse(imageUri))?.use {
+            Drawable.createFromStream(it, null)
+        }
+    } catch (e: Exception) {
+        null
+    }
+
+    if (drawable != null) {
+        cursorView?.setCursorDrawable(drawable)
+        loadedCursorImageUri = imageUri
+    }
+}
         cursorView?.setCursorColor(prefs.cursorColor)
         gestureMenu?.setDockRight(prefs.menuOnRight)
         // Moving the strip changes what sits under a still pointer; configure()
@@ -487,6 +506,7 @@ class MouseAccessibilityService : AccessibilityService() {
         dwellClicker = null
         gestureDispatcher = null
         gestureMenu = null
+        loadedCursorImageUri = null
         pendingX = null
         pendingY = null
         passthrough.reset()
