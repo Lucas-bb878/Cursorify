@@ -48,7 +48,14 @@ class OpenMouseSettings(context: Context) {
     var cursorScale: Float
         get() = prefs.getFloat(KEY_CURSOR_SCALE, DEFAULT_CURSOR_SCALE).coerceIn(MIN_CURSOR_SCALE, MAX_CURSOR_SCALE)
         set(value) = prefs.edit { putFloat(KEY_CURSOR_SCALE, value.coerceIn(MIN_CURSOR_SCALE, MAX_CURSOR_SCALE)) }
-
+/** URI of the custom cursor image selected by the user. */
+var cursorImageUri: String?
+    get() = prefs.getString(KEY_CURSOR_IMAGE_URI, null)
+    set(value) = prefs.edit {
+        if (value == null) remove(KEY_CURSOR_IMAGE_URI)
+        else putString(KEY_CURSOR_IMAGE_URI, value)
+    }
+    
     /** Index into [CURSOR_COLORS]. */
     var cursorColorIndex: Int
         get() = prefs.getInt(KEY_CURSOR_COLOR, 0).coerceIn(0, CURSOR_COLORS.size - 1)
@@ -76,6 +83,7 @@ class OpenMouseSettings(context: Context) {
         private const val KEY_MOVE_DP = "move_dp"
         private const val KEY_POST_ACTION_DP = "post_action_dp"
         private const val KEY_CURSOR_SCALE = "cursor_scale"
+        private const val KEY_CURSOR_IMAGE_URI = "cursor_image_uri"
         private const val KEY_CURSOR_COLOR = "cursor_color"
         private const val KEY_MENU_RIGHT = "menu_right"
 
