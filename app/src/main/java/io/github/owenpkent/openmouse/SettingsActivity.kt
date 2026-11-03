@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.slider.Slider
 import com.google.android.material.switchmaterial.SwitchMaterial
 import io.github.owenpkent.openmouse.settings.OpenMouseSettings
+import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContracts
 
 /**
  * Settings screen. Every control writes straight to [OpenMouseSettings] on
@@ -24,6 +26,25 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var settings: OpenMouseSettings
     private val colorButtons = mutableListOf<RadioButton>()
+    
+    private val chooseCursorImage =
+    registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            try {
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                settings.cursorImageUri = uri.toString()
+
+                findViewById<com.google.android.material.button.MaterialButton>(
+                    R.id.chooseCursorImageButton
+                ).text = "Imagem selecionada"
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     private lateinit var dwellLabel: TextView
     private lateinit var moveLabel: TextView
@@ -34,6 +55,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         settings = OpenMouseSettings(this)
+        setupCursorImageButton()
 
         dwellLabel = findViewById(R.id.dwellLabel)
         moveLabel = findViewById(R.id.moveLabel)
@@ -46,6 +68,22 @@ class SettingsActivity : AppCompatActivity() {
         setupMenuSide()
     }
 
+    private fun setupCursorImageButton() {
+    val button = findViewById<com.google.android.material.button.MaterialButton>(
+        R.id.chooseCursorImageButton
+    )
+
+    button.text = if (settings.cursorImageUri != null) {
+        "Imagem selecionada"
+    } else {
+        "Escolher imagem do cursor"
+    }
+
+    button.setOnClickListener {
+        chooseCursorImage.launch(arrayOf("image/*"))
+       }
+    }
+    
     private fun setupDwellToggle() {
         val toggle = findViewById<SwitchMaterial>(R.id.dwellEnabledSwitch)
         toggle.isChecked = settings.dwellEnabled
