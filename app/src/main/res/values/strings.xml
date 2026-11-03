@@ -1,23 +1,24 @@
 <resources>
-    <string name="app_name">OpenMouse</string>
-    <string name="accessibility_service_label">OpenMouse cursor</string>
-    <string name="accessibility_service_description">Lets you control this device with a physical mouse or trackball. OpenMouse draws a large cross-hair cursor and clicks for you when the pointer rests still (dwell click), so no buttons are required. Built for people with tremors or limited fine motor control.</string>
-
-    <string name="title">OpenMouse</string>
+    <string name="app_name">Cursorify</string>
+    <string name="accessibility_service_label">Cursorify cursor</string>
+    <string name="accessibility_service_description">Lets you control this device with a physical mouse or trackball. Cursorify draws a large cross-hair cursor and clicks for you when the pointer rests still (dwell click), so no buttons are required. Built for people with tremors or limited fine motor control.</string>
+    <string name="settings_apply_note">Changes apply immediately while Cursorify is running.</string>
+                                                                                                
+    <string name="title">Cursorify</string>
     <string name="tagline">Control your device with a mouse, no touchscreen needed.</string>
 
-    <string name="status_enabled">OpenMouse is ON. Move your mouse to drive the cross-hair cursor; hold it still or click to act. Use the menu on the right edge for double-tap, hold, and navigation.</string>
-    <string name="status_disabled">OpenMouse is OFF. Enable the accessibility service to start.</string>
+    <string name="status_enabled">Cursorify is ON. Move your mouse to drive the cross-hair cursor; hold it still or click to act. Use the menu on the right edge for double-tap, hold, and navigation.</string>
+    <string name="status_disabled">Cursorify is OFF. Enable the accessibility service to start.</string>
 
     <string name="how_it_works_title">How it works</string>
-    <string name="how_it_works_body">1. Plug in a USB or Bluetooth mouse.\n2. Tap the button below and turn on \"OpenMouse cursor\" under Installed services.\n3. A big cross-hair follows the mouse. Stop moving and it clicks automatically.</string>
+    <string name="how_it_works_body">1. Plug in a USB or Bluetooth mouse.\n2. Tap the button below and turn on \"Cursorify cursor\" under Installed services.\n3. A big cross-hair follows the mouse. Stop moving and it clicks automatically.</string>
 
     <string name="open_settings">Open accessibility settings</string>
     <string name="refresh_status">Refresh status</string>
-    <string name="open_app_settings">OpenMouse settings</string>
+    <string name="open_app_settings">Cursorify settings</string>
 
     <!-- Settings screen -->
-    <string name="settings_title">OpenMouse settings</string>
+    <string name="settings_title">Cursorify settings</string>
     <string name="settings_dwell_click">Dwell click (auto-click on rest)</string>
     <string name="settings_dwell_time">Dwell time</string>
     <string name="settings_move_tolerance">Movement tolerance</string>
@@ -27,7 +28,6 @@
     <string name="settings_menu_side">Menu side</string>
     <string name="settings_menu_left">Left</string>
     <string name="settings_menu_right">Right</string>
-    <string name="settings_apply_note">Changes apply immediately while OpenMouse is running.</string>
     <string name="settings_dwell_value">Dwell time:   %1$.1f s</string>
     <string name="settings_move_value">Movement tolerance:   %1$d dp</string>
     <string name="settings_post_action_value">Re-arm distance after a click:   %1$d dp</string>
