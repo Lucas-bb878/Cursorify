@@ -86,6 +86,10 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
+    // Shizuku
+    implementation("dev.rikka.shizuku:api:13.1.5")
+    implementation("dev.rikka.shizuku:provider:13.1.5")
+
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.jazzer.junit)
     testRuntimeOnly(libs.junit.platform.launcher)
