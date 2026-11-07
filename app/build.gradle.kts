@@ -20,6 +20,10 @@ android {
     namespace = "io.github.owenpkent.openmouse"
     compileSdk = 36
 
+    buildFeatures {
+        aidl = true
+    }
+
     defaultConfig {
         applicationId = "io.github.owenpkent.openmouse"
         minSdk = 24
