@@ -1,212 +1,83 @@
-# OpenMouse
+Cursorify
 
-An open-source Android cursor for people who use a mouse or trackball instead of
-a touchscreen. OpenMouse draws a large cross-hair pointer that follows your
-mouse and clicks for you when the pointer rests still, so no buttons are
-required. It is built for people with tremors, limited fine motor control, or
-conditions like cerebral palsy.
+Your mouse. Your cursor. Your style.
 
-It is a clean-room, open-source clone of the excellent (closed-source)
-[Ease Mouse](https://easeapps.xyz/ease-mouse/) by crea_si, rebuilt in Kotlin so
-the approach can be studied, forked, and improved. OpenMouse is not affiliated
-with or endorsed by Ease Apps.
+Cursorify is an open-source Android application that lets you customize the appearance of your mouse cursor when using a physical mouse or trackball.
 
-> **Status: v0.1.0, an early release.** The cursor follows the mouse with dwell
-> and standard clicks; an on-screen menu adds double-tap, long-press, drag,
-> swipe, scroll, and Back / Home / Recent / Notifications / Quick Settings; and a
-> live settings screen tunes it. The logic is unit tested and the app is verified
-> on an emulator. Remaining roadmap items (tremor filter, pinch-to-zoom) are
-> below.
+Originally based on "OpenMouse" (https://github.com/owenpkent/openmouse), Cursorify is being developed to provide a more customizable cursor experience, with support for user-selected images and further improvements planned.
 
-## Install
+Features
 
-- **Direct APK:** download the latest `openmouse-*.apk` from the
-  [Releases](https://github.com/owenpkent/openmouse/releases) page and sideload it
-  (Android 7.0+).
-- **F-Droid** and **Google Play**: planned; the metadata and submission guides are
-  ready (see [docs/RELEASING.md](docs/RELEASING.md)).
+Currently available
 
-Then open OpenMouse, enable **OpenMouse cursor** in Accessibility settings, and
-plug in a mouse (details under [Enabling](#enabling-openmouse-on-a-device)).
+- Custom cursor image selection from your device
+- Support for image files, including PNG and JPG
+- Experimental GIF support
+- Cursor overlay that follows mouse movement
+- Adjustable cursor size
+- Android Accessibility Service integration
+- Works with physical USB OTG and Bluetooth mice
 
-## Why "integrated directly into Android"
+In development
 
-OpenMouse is a standard Android **AccessibilityService**, not an overlay hack or
-a custom ROM. It hooks into the same accessibility framework that screen readers
-use, which is the only stock-Android mechanism that can both observe pointer
-input and inject taps/gestures across every app. That means:
+- Replacing the native Android mouse pointer instead of displaying an image underneath it
+- Shizuku integration for privileged system-level cursor customization
+- Improved animated GIF support
+- More cursor appearance settings
+- Additional customization options
 
-- No root.
-- No custom Android build.
-- Installs on any device running **Android 7.0 (API 24) or newer**.
+«Development status: Cursorify is an experimental project. Some features are still being developed and may not work correctly on every Android device.»
 
-`AccessibilityService.dispatchGesture()` (the tap-injection API) landed in
-Android 7.0, which is exactly why 7.0 is the floor.
+How it works
 
-## How it works
+Cursorify uses Android's Accessibility Service to observe mouse movement and display a customizable cursor overlay.
 
-```
-physical mouse
-      │  motion events
-      ▼
-┌─────────────────────────────┐
-│ input capture               │  API 34+: service.onMotionEvent (overlay
-│  - reports x,y              │  non-touchable, touch passes through)
-│                             │  API 24-33: CursorView captures the mouse
-└──────────────┬──────────────┘
-               │ x,y                (CursorView draws the cross-hair + menu)
-               ▼
-┌─────────────────────────────┐
-│ DwellClicker                │  fires when the cursor rests still
-│  - countdown → click        │  for the dwell time; locks until the
-│  - progress → cursor        │  cursor moves away again
-└──────────────┬──────────────┘
-               │ tap(x,y)
-               ▼
-┌─────────────────────────────┐
-│ GestureDispatcher           │  dispatchGesture() injects a real tap
-│  via AccessibilityService   │  into the app underneath
-└─────────────────────────────┘
-```
+The project is also exploring Shizuku integration to communicate with Android's system-level input services. The goal is to replace the native mouse pointer with the user's chosen cursor image, rather than simply drawing another cursor on top of it.
 
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the details, including the
-two input-capture paths and how injected gestures reach the app below.
+Requirements
 
-## Features
+- Android 7.0 or newer
+- A physical USB OTG or Bluetooth mouse
+- Accessibility Service enabled for Cursorify
 
-**Working now**
+Some advanced features may require "Shizuku" (https://shizuku.rikka.app/).
 
-- Big cross-hair cursor that follows a USB or Bluetooth mouse / trackball
-- Dwell click: rest the pointer and it clicks automatically, with a shrinking
-  countdown for feedback
-- Standard click: a physical left-button press taps immediately
-- Scroll wheel scrolls the content under the cursor
-- On-screen gesture menu (collapsible grid, left or right edge, widens on short
-  screens so every entry stays reachable)
-- Tap modes: single tap, double-tap, long-press
-- Drag and swipe: two-point gestures (click a start point, then an end point)
-- Scroll up / down at the cursor
-- Navigation from the menu: Back, Home, Recent, Notifications, Quick Settings
-- Menu entries never re-fire while the pointer sits on them: a tremor inside a
-  cell does not restart or repeat it, only leaving and coming back does
-- Pause / Resume from the menu: stops dwell clicking on the app while the menu
-  (and physical clicks) keep working
-- Scroll modes repeat while the pointer rests: one notch per dwell period
-- Settings screen (applied live): dwell time, movement tolerance, re-arm distance
-  after a click, cursor size, cursor color, menu side, and a dwell-click on/off
-  toggle
-- On Android 14+ the overlay is non-touchable, so the touchscreen keeps working
-  normally and a stray finger can never move the cursor or fire a click
+Installation
 
-**Roadmap** (mirrors the original's feature set)
+1. Download the latest available APK from the project's GitHub Actions artifacts or Releases, when available.
+2. Install the APK on your Android device.
+3. Open Cursorify.
+4. Enable the Cursorify Accessibility Service when prompted.
+5. Connect a physical mouse and start customizing your cursor.
 
-- [ ] "Ease click": hold the button through a countdown, with a tremor filter
-- [ ] Pinch-to-zoom (two-finger gesture)
-- [ ] Drag-and-drop pickup (initial long-press before the drag)
-- [ ] Hide the system pointer on Android 14+ (only the cross-hair is shown)
+Building
 
-## Building
+The project can be built using Android Studio or a local Android development environment with JDK 17+ and the Android SDK.
 
-You need **Android Studio** (Koala or newer) or a local JDK 17+ and the Android
-SDK. The project uses **AGP 9.0.1** with AGP's built-in Kotlin (no separate
-Kotlin plugin), targets **SDK 36**, and the committed Gradle wrapper pins
-**Gradle 9.2.1**.
+To build a debug APK:
 
-```bash
-# In Android Studio: File ▸ Open ▸ select this folder, then Run ▸ app.
-# Or from the command line:
-./gradlew assembleDebug   # build the APK
-./gradlew test            # run the unit tests
-```
+./gradlew assembleDebug
 
-If Android Studio does not create `local.properties`, add it with your SDK path:
+To run unit tests:
 
-```
-sdk.dir=/path/to/Android/Sdk
-```
+./gradlew test
 
-## Enabling OpenMouse on a device
+Project background
 
-1. Install the app and plug in a mouse (USB OTG or Bluetooth).
-2. Open OpenMouse and tap **Open accessibility settings**.
-3. Under *Installed services*, enable **OpenMouse cursor** and accept the prompt.
-4. Move the mouse: the big cross-hair appears. Hold it still to click.
+Cursorify is a fork of "OpenMouse" (https://github.com/owenpkent/openmouse), originally created by Owen Kent.
 
-To stop, turn the service back off in accessibility settings.
+The original project provided the foundation for mouse accessibility features and cursor tracking. Cursorify continues from that foundation with a focus on visual customization and system-level cursor replacement.
 
-## Project layout
+Cursorify is an independent project and is not affiliated with or endorsed by the original OpenMouse author.
 
-```
-app/src/main/
-├── java/io/github/owenpkent/openmouse/
-│   ├── MainActivity.kt                 onboarding + enable button
-│   ├── SettingsActivity.kt             settings screen (live-applied)
-│   ├── service/MouseAccessibilityService.kt   the engine
-│   ├── cursor/CursorView.kt            overlay: draws + captures input
-│   ├── click/DwellClicker.kt           Android timer wrapper
-│   ├── click/DwellMachine.kt           pure dwell logic (unit tested)
-│   ├── menu/GestureMenu.kt             menu: drawing + action mapping
-│   ├── menu/MenuGeometry.kt            pure layout + hit-testing (unit tested)
-│   ├── settings/OpenMouseSettings.kt   SharedPreferences-backed settings
-│   └── gesture/GestureDispatcher.kt    dispatchGesture() wrapper
-├── res/xml/accessibility_service_config.xml
-└── AndroidManifest.xml
+Contributing
 
-app/src/test/java/io/github/owenpkent/openmouse/   JVM unit tests (JUnit 5)
-├── click/DwellMachineTest.kt
-├── menu/MenuGeometryTest.kt
-└── fuzz/                            Jazzer fuzz targets (run nightly)
-    ├── DwellMachineFuzzTest.kt
-    └── MenuGeometryFuzzTest.kt
-```
+Suggestions, bug reports, and contributions are welcome!
 
-## Testing
+If you find a bug or have an idea for a new feature, feel free to open an issue or submit a pull request.
 
-The Android-coupled classes (the service, the overlay view, the gesture
-dispatcher) are deliberately thin. The decision logic they wrap lives in pure
-classes with no Android dependencies, so it runs as fast JVM unit tests:
+License
 
-- `DwellMachine` -- the dwell-to-click state machine (clock injected, not read)
-- `MenuGeometry` -- the menu's layout and hit-testing
+This project retains the original project's MIT license.
 
-```bash
-./gradlew test          # run all unit tests (fuzz targets replay their seed corpus)
-./gradlew testDebugUnitTest
-```
-
-The same pure classes are also fuzzed with [Jazzer](https://github.com/CodeIntelligenceTesting/jazzer),
-the JVM libFuzzer, mirroring the fuzz target PowerToys ships for its Dwell Click
-engine. The targets under `app/src/test/.../fuzz/` feed arbitrary event
-sequences, coordinates, timestamps and settings into `DwellMachine` and
-`MenuGeometry` and check invariants after every step (progress stays in 0..1,
-nothing fires before the pointer moves, the same rest never fires twice, hit-test
-results agree with the cell bounds). They run as ordinary unit tests unless
-fuzzing is switched on:
-
-```bash
-JAZZER_FUZZ=1 ./gradlew testDebugUnitTest --tests '*FuzzTest'   # ten minutes per target
-```
-
-The [nightly workflow](.github/workflows/nightly-fuzz.yml) runs each target for
-ten minutes and uploads any reproducing input as an artifact; commit it under
-`app/src/test/resources/` to keep it as a regression test.
-
-When adding behavior, prefer putting the logic in a pure class and testing it
-there, keeping the Android wrapper a straight pass-through.
-
-## Contributing
-
-Issues and pull requests are welcome, especially from the AAC / accessibility
-community. The roadmap items above are good starting points.
-
-- [CONTRIBUTING.md](CONTRIBUTING.md) — setup, conventions, emulator testing, and
-  how to add a new gesture
-- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — community standards
-- [SECURITY.md](SECURITY.md) — reporting a vulnerability
-- [docs/RELEASING.md](docs/RELEASING.md) — the plan for shipping to F-Droid / Play
-- [docs/UPSTREAMING.md](docs/UPSTREAMING.md) — the plan for getting it into Android
-  natively (AOSP / LineageOS)
-
-## License
-
-[MIT](LICENSE) © 2026 Owen Kent.
+See "LICENSE" (LICENSE) for details.
